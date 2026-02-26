@@ -250,8 +250,8 @@
             </div>
 
             <div class="col-4">
-                <label>Phone Number</label>
-                <input id="patientPhone" type="tel" placeholder="e.g., 555-123-4567" />
+                <label>Date of Service</label>
+                <input id="dateOfService" type="date" />
             </div>
 
             <div class="col-4">
@@ -259,9 +259,16 @@
                 <input id="patientMRN" type="text" placeholder="Medical record number" />
             </div>
 
-            <div class="col-4">
-                <label>Date of Service</label>
-                <input id="dateOfService" type="date" />
+            <div class="col-12">
+                <label>Race / Ethnicity</label>
+                <select id="race">
+                    <option value="">Select race/ethnicity</option>
+                    <option value="white">White / Caucasian</option>
+                    <option value="black">Black / African American</option>
+                    <option value="hispanic">Hispanic / Latino</option>
+                    <option value="asian">Asian / Pacific Islander</option>
+                    <option value="other">Other / Mixed</option>
+                </select>
             </div>
 
             <div class="col-12">
@@ -283,187 +290,7 @@
             </div>
         </div>
     </fieldset>
-
-    <fieldset>
-        <legend>Core</legend>
-        <div class="grid">
-            <div class="col-3">
-                <label>Age (years)</label>
-                <input id="age" type="number" min="18" max="120" step="1" value="50" />
-            </div>
-
-            <div class="col-4">
-                <label>Race / Ethnicity</label>
-                <select id="race">
-                    <option value="">Select race/ethnicity</option>
-                    <option value="white">White / Caucasian</option>
-                    <option value="black">Black / African American</option>
-                    <option value="hispanic">Hispanic / Latino</option>
-                    <option value="asian">Asian / Pacific Islander</option>
-                    <option value="other">Other / Mixed</option>
-                </select>
-            </div>
-
-            <div class="col-3">
-                <label>Family History (first-degree)</label>
-                <select id="familyHistory">
-                    <option value="0">0 (No)</option>
-                    <option value="1">1 (Yes)</option>
-                </select>
-            </div>
-
-            <div class="col-3">
-                <label>Inflammation History</label>
-                <select id="inflammationHistory">
-                    <option value="0">0 (No)</option>
-                    <option value="1">1 (Yes)</option>
-                </select>
-            </div>
-
-            <!-- Optional extra fields (kept to match your existing export shape) -->
-            <div class="col-3">
-                <label>BRCA Status (optional)</label>
-                <select id="brcaStatus">
-                    <option value="unknown">unknown</option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                </select>
-            </div>
-
-            <div class="col-3">
-                <label>Smoking Status</label>
-                <select id="smoking">
-                    <option value="2">Current</option>
-                    <option value="1">Former</option>
-                    <option value="0">Never</option>
-                </select>
-            </div>
-
-            <div class="col-3">
-                <label>Chemical Exposure (optional)</label>
-                <select id="chemicalExposure">
-                    <option value="unknown">unknown</option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                </select>
-            </div>
-
-            <div class="col-3">
-                <label>Diet Pattern</label>
-                <select id="dietPattern">
-                    <option value="">Select diet pattern</option>
-                    <option value="western">Western / Standard American</option>
-                    <option value="mediterranean">Mediterranean</option>
-                    <option value="dash">DASH-style</option>
-                    <option value="plant-based">Plant-based (Vegetarian / Vegan)</option>
-                    <option value="pescatarian">Pescatarian</option>
-                    <option value="low-carb-keto">Low-carb / Keto</option>
-                    <option value="other">Other / Prefer not to say</option>
-                </select>
-            </div>
-
-        </div>
-    </fieldset>
-
-    <fieldset>
-        <legend>Height / Weight → BMI</legend>
-        <div class="grid">
-            <div class="col-3">
-                <label>Height Unit</label>
-                <select id="heightUnit">
-                    <option value="imperial">imperial (ft/in)</option>
-                    <option value="metric">metric (cm)</option>
-                </select>
-            </div>
-            <div class="col-3">
-                <label>Height (ft)</label>
-                <input id="heightFt" type="number" min="0" max="8" step="1" value="5" />
-            </div>
-            <div class="col-3">
-                <label>Height (in)</label>
-                <input id="heightIn" type="number" min="0" max="11" step="1" value="9" />
-            </div>
-            <div class="col-3">
-                <label>Height (cm)</label>
-                <input id="heightCm" type="number" min="0" max="300" step="0.1" value="" placeholder="(metric)" />
-            </div>
-
-            <div class="col-3">
-                <label>Weight Unit</label>
-                <select id="weightUnit">
-                    <option value="lbs">lbs</option>
-                    <option value="kg">kg</option>
-                </select>
-            </div>
-            <div class="col-3">
-                <label>Weight</label>
-                <input id="weight" type="number" min="0" max="1500" step="0.1" value="180" />
-            </div>
-            <div class="col-3">
-                <label>Weight (kg)</label>
-                <input id="weightKg" type="number" min="0" max="700" step="0.1" value="" placeholder="auto" />
-            </div>
-            <div class="col-3">
-                <label>BMI</label>
-                <input id="bmi" type="number" step="0.1" value="" placeholder="auto" />
-            </div>
-
-            <div class="col-12 note">
-                BMI is computed automatically when height + weight are present.
-            </div>
-        </div>
-    </fieldset>
-
-    <fieldset>
-        <legend>Exercise</legend>
-        <div class="grid">
-            <div class="col-4">
-                <label>Exercise Code</label>
-                <select id="exercise">
-                    <option value="0">0 = Regular (3+/week)</option>
-                    <option value="1">1 = Some (1–2/week)</option>
-                    <option value="2">2 = None</option>
-                </select>
-            </div>
-            <div class="col-12 note">
-                Stored as <code>exercise</code> (0/1/2) in JSON.
-            </div>
-        </div>
-    </fieldset>
-
-    <fieldset>
-        <legend>Urinary Symptoms (IPSS)</legend>
-        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past month, how often have you had:</div>
-        <div id="ipssGrid"></div>
-        <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
-    </fieldset>
-
-    <fieldset>
-        <legend>Sexual Health (SHIM)</legend>
-        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past 6 months:</div>
-        <div id="shimGrid"></div>
-        <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
-    </fieldset>
-
-    <fieldset>
-        <legend>Optional PSA / MRI (if known)</legend>
-        <div class="grid">
-            <div class="col-3">
-                <label>PSA (ng/mL)</label>
-                <input id="psa" type="number" step="0.01" min="0" max="200" placeholder="optional" />
-            </div>
-            <div class="col-3">
-                <label>PI-RADS (2–5)</label>
-                <select id="pirads">
-                    <option value="">(unknown)</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
-        </div>
-    </fieldset>
+    </div>
 
     <div class="btns">
         <button class="primary" id="saveBtn">Save Locally</button>
@@ -480,8 +307,170 @@
 
     <div id="part2Section" style="display:none;">
         <fieldset>
-            <legend>Part 2 Questions</legend>
-            <div class="note">Part 2 questions will be added here. For now, this is a placeholder.</div>
+            <legend>Core</legend>
+            <div class="grid">
+                <div class="col-3">
+                    <label>Age (years)</label>
+                    <input id="age" type="number" min="18" max="120" step="1" value="50" />
+                </div>
+
+                <div class="col-3">
+                    <label>Family History (first-degree)</label>
+                    <select id="familyHistory">
+                        <option value="0">0 (No)</option>
+                        <option value="1">1 (Yes)</option>
+                    </select>
+                </div>
+
+                <div class="col-3">
+                    <label>Inflammation History</label>
+                    <select id="inflammationHistory">
+                        <option value="0">0 (No)</option>
+                        <option value="1">1 (Yes)</option>
+                    </select>
+                </div>
+
+                <div class="col-3">
+                    <label>BRCA Status (optional)</label>
+                    <select id="brcaStatus">
+                        <option value="unknown">unknown</option>
+                        <option value="yes">yes</option>
+                        <option value="no">no</option>
+                    </select>
+                </div>
+
+                <div class="col-3">
+                    <label>Smoking Status</label>
+                    <select id="smoking">
+                        <option value="2">Current</option>
+                        <option value="1">Former</option>
+                        <option value="0">Never</option>
+                    </select>
+                </div>
+
+                <div class="col-3">
+                    <label>Chemical Exposure (optional)</label>
+                    <select id="chemicalExposure">
+                        <option value="unknown">unknown</option>
+                        <option value="yes">yes</option>
+                        <option value="no">no</option>
+                    </select>
+                </div>
+
+                <div class="col-3">
+                    <label>Diet Pattern</label>
+                    <select id="dietPattern">
+                        <option value="">Select diet pattern</option>
+                        <option value="western">Western / Standard American</option>
+                        <option value="mediterranean">Mediterranean</option>
+                        <option value="dash">DASH-style</option>
+                        <option value="plant-based">Plant-based (Vegetarian / Vegan)</option>
+                        <option value="pescatarian">Pescatarian</option>
+                        <option value="low-carb-keto">Low-carb / Keto</option>
+                        <option value="other">Other / Prefer not to say</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Height / Weight → BMI</legend>
+            <div class="grid">
+                <div class="col-3">
+                    <label>Height Unit</label>
+                    <select id="heightUnit">
+                        <option value="imperial">imperial (ft/in)</option>
+                        <option value="metric">metric (cm)</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label>Height (ft)</label>
+                    <input id="heightFt" type="number" min="0" max="8" step="1" value="5" />
+                </div>
+                <div class="col-3">
+                    <label>Height (in)</label>
+                    <input id="heightIn" type="number" min="0" max="11" step="1" value="9" />
+                </div>
+                <div class="col-3">
+                    <label>Height (cm)</label>
+                    <input id="heightCm" type="number" min="0" max="300" step="0.1" value="" placeholder="(metric)" />
+                </div>
+
+                <div class="col-3">
+                    <label>Weight Unit</label>
+                    <select id="weightUnit">
+                        <option value="lbs">lbs</option>
+                        <option value="kg">kg</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label>Weight</label>
+                    <input id="weight" type="number" min="0" max="1500" step="0.1" value="180" />
+                </div>
+                <div class="col-3">
+                    <label>Weight (kg)</label>
+                    <input id="weightKg" type="number" min="0" max="700" step="0.1" value="" placeholder="auto" />
+                </div>
+                <div class="col-3">
+                    <label>BMI</label>
+                    <input id="bmi" type="number" step="0.1" value="" placeholder="auto" />
+                </div>
+
+                <div class="col-12 note">
+                    BMI is computed automatically when height + weight are present.
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Exercise</legend>
+            <div class="grid">
+                <div class="col-4">
+                    <label>Exercise Code</label>
+                    <select id="exercise">
+                        <option value="0">0 = Regular (3+/week)</option>
+                        <option value="1">1 = Some (1–2/week)</option>
+                        <option value="2">2 = None</option>
+                    </select>
+                </div>
+                <div class="col-12 note">
+                    Stored as <code>exercise</code> (0/1/2) in JSON.
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Urinary Symptoms (IPSS)</legend>
+            <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past month, how often have you had:</div>
+            <div id="ipssGrid"></div>
+            <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Sexual Health (SHIM)</legend>
+            <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past 6 months:</div>
+            <div id="shimGrid"></div>
+            <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Optional PSA / MRI (if known)</legend>
+            <div class="grid">
+                <div class="col-3">
+                    <label>PSA (ng/mL)</label>
+                    <input id="psa" type="number" step="0.01" min="0" max="200" placeholder="optional" />
+                </div>
+                <div class="col-3">
+                    <label>PI-RADS (2–5)</label>
+                    <select id="pirads">
+                        <option value="">(unknown)</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+            </div>
         </fieldset>
     </div>
 
