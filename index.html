@@ -456,6 +456,12 @@
         <button class="danger" id="clearBtn">Clear Local Draft</button>
     </div>
 
+    <div class="btns">
+        <button id="downloadAllBtn">Download All Patients</button>
+        <button id="importPatientsBtn">Import Patients</button>
+        <input type="file" id="importFile" accept=".json" style="display:none;" />
+    </div>
+
     <h3>Saved Patients</h3>
     <div id="patientList"></div>
     <div class="note" id="noPatientsNote">No saved patients yet. Use "Save Locally" to add patients here.</div>
@@ -785,6 +791,36 @@
             URL.revokeObjectURL(url);
         }
 
+        function downloadAllPatients() {
+            const patients = getPatients();
+            const payload = {
+                version: "1.0",
+                exportDate: new Date().toISOString(),
+                patients
+            };
+            const safeDate = new Date().toISOString().replace(/[:.]/g, "-");
+            downloadJson(payload, `epsa-all-patients-${safeDate}.json`);
+        }
+
+        function importPatients(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data.patients)) {
+                        alert("Invalid file: expected a 'patients' array.");
+                        return;
+                    }
+                    localStorage.setItem(PATIENTS_KEY, JSON.stringify(data.patients));
+                    renderPatientList();
+                    alert(`Imported ${data.patients.length} patient(s).`);
+                } catch (err) {
+                    alert("Failed to parse JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function autoPreview() {
             const obj = buildExportObject();
             el("preview").textContent = JSON.stringify(obj, null, 2);
@@ -797,6 +833,16 @@
             renderPatientList();
             el("preview").textContent = JSON.stringify(obj, null, 2);
             alert("Saved locally and added to patient list.");
+        });
+
+        el("downloadAllBtn").addEventListener("click", downloadAllPatients);
+        el("importPatientsBtn").addEventListener("click", () => {
+            el("importFile").click();
+        });
+        el("importFile").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) importPatients(file);
+            e.target.value = "";
         });
 
         el("exportBtn").addEventListener("click", () => {
