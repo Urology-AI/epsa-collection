@@ -408,13 +408,15 @@
     </fieldset>
 
     <fieldset>
-        <legend>IPSS (7 questions, 0–5 each)</legend>
+        <legend>Urinary Symptoms (IPSS)</legend>
+        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past month, how often have you had:</div>
         <div id="ipssGrid"></div>
         <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
     </fieldset>
 
     <fieldset>
-        <legend>SHIM (5 questions, 0–5 each)</legend>
+        <legend>Sexual Health (SHIM)</legend>
+        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past 6 months:</div>
         <div id="shimGrid"></div>
         <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
     </fieldset>
@@ -484,14 +486,16 @@
             return Number.isFinite(n) ? n : "";
         }
 
-        function buildQuestions(containerId, count, prefix, labels) {
+        function buildQuestions(containerId, count, prefix, labels, questions) {
             const grid = el(containerId);
             grid.innerHTML = "";
             for (let i = 1; i <= count; i++) {
                 const wrap = document.createElement("div");
-                wrap.className = "col-3";
-                const lab = document.createElement("label");
-                lab.textContent = `${prefix} Q${i}`;
+                wrap.className = "col-12";
+                const lab = document.createElement("div");
+                lab.style.fontWeight = "650";
+                lab.style.marginBottom = "8px";
+                lab.textContent = `${prefix} Q${i}: ${questions ? questions[i-1] : ''}`;
                 const btnsWrap = document.createElement("div");
                 btnsWrap.className = "qBtns";
                 const items = Array.isArray(labels[i-1][0]) ? labels[i-1] : labels[i-1].map((txt, v) => [v, txt]);
@@ -523,6 +527,15 @@
             }
         }
 
+        const ipssQuestions = [
+            "Incomplete emptying — not fully emptying your bladder?",
+            "Frequency — urinating again within 2 hours?",
+            "Intermittency — stopping and starting during urination?",
+            "Urgency — difficulty postponing urination?",
+            "Weak stream — weak urinary stream?",
+            "Straining — pushing or straining to begin?",
+            "Nocturia — getting up at night to urinate?"
+        ];
         const ipssLabels = [
             ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
             ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
@@ -532,6 +545,13 @@
             ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
             ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"]
         ];
+        const shimQuestions = [
+            "How do you rate your confidence that you could get and keep an erection?",
+            "When you had erections with sexual stimulation, how often were they hard enough for penetration?",
+            "During intercourse, how often were you able to maintain your erection after penetration?",
+            "During intercourse, how difficult was it to maintain your erection to completion?",
+            "When you attempted intercourse, how often was it satisfactory for you?"
+        ];
         const shimLabels = [
             [[1,"Very low"],[2,"Low"],[3,"Moderate"],[4,"High"],[5,"Very high"]],
             [[0,"No activity"],[1,"Almost never"],[2,"A few times"],[3,"Sometimes"],[4,"Most times"],[5,"Almost always"]],
@@ -539,8 +559,8 @@
             [[0,"Did not attempt"],[1,"Extremely difficult"],[2,"Very difficult"],[3,"Difficult"],[4,"Slightly difficult"],[5,"Not difficult"]],
             [[0,"Did not attempt"],[1,"Almost never"],[2,"A few times"],[3,"Sometimes"],[4,"Most times"],[5,"Almost always"]]
         ];
-        buildQuestions("ipssGrid", 7, "IPSS", ipssLabels);
-        buildQuestions("shimGrid", 5, "SHIM", shimLabels);
+        buildQuestions("ipssGrid", 7, "IPSS", ipssLabels, ipssQuestions);
+        buildQuestions("shimGrid", 5, "SHIM", shimLabels, shimQuestions);
 
         function computeBMI() {
             const heightUnit = el("heightUnit").value;
