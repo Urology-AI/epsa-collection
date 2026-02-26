@@ -229,20 +229,17 @@
     </p>
 
     <div style="margin-bottom:16px;">
-        <label>Select Patient (required)</label>
-        <select id="workflowPatientSelect" style="width:100%; max-width:400px;"></select>
-    </div>
-    <div style="margin-bottom:16px;">
-        <label>Choose Section</label>
+        <label>Workflow Step</label>
         <div class="btns">
-            <button class="primary" id="showPart1Btn">Part 1 Questions</button>
-            <button id="showPart2Btn">Part 2 Questions</button>
+            <button class="primary" id="showAddPatientBtn">1. Add New Patient</button>
+            <button id="showSelectPatientBtn">2. Select Existing Patient</button>
+            <button id="showPart2Btn">3. Answer Part 2 Questions</button>
         </div>
     </div>
 
-    <div id="part1Section">
+    <div id="addPatientSection">
     <fieldset>
-        <legend>Patient Information</legend>
+        <legend>Add New Patient</legend>
         <div class="grid">
             <div class="col-4">
                 <label>Full Name</label>
@@ -289,7 +286,23 @@
                 phone/MRN before export.
             </div>
         </div>
+        <div class="btns" style="margin-top:12px;">
+            <button class="primary" id="addPatientBtn">Add Patient</button>
+        </div>
     </fieldset>
+    </div>
+
+    <div id="selectPatientSection" style="display:none;">
+        <fieldset>
+            <legend>Select Existing Patient</legend>
+            <div style="margin-bottom:12px;">
+                <label>Choose Patient</label>
+                <select id="workflowPatientSelect" style="width:100%; max-width:400px;"></select>
+            </div>
+            <div class="btns">
+                <button class="primary" id="loadSelectedPatientBtn">Load Patient</button>
+            </div>
+        </fieldset>
     </div>
 
     <div class="btns">
@@ -306,6 +319,9 @@
     </div>
 
     <div id="part2Section" style="display:none;">
+        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">
+            Patient: <strong id="currentPatientName">—</strong> | Date: <strong id="currentPatientDate">—</strong>
+        </div>
         <fieldset>
             <legend>Core</legend>
             <div class="grid">
@@ -875,22 +891,58 @@
         }
 
         // Wire buttons
-        el("showPart1Btn").addEventListener("click", () => {
-            el("part1Section").style.display = "block";
-            el("part2Section").style.display = "none";
-            localStorage.setItem(WORKFLOW_KEY, "part1");
+        el("showAddPatientBtn").addEventListener("click", () => {
+            showSection("addPatient");
+        });
+        el("showSelectPatientBtn").addEventListener("click", () => {
+            showSection("selectPatient");
         });
         el("showPart2Btn").addEventListener("click", () => {
-            el("part1Section").style.display = "none";
-            el("part2Section").style.display = "block";
-            localStorage.setItem(WORKFLOW_KEY, "part2");
+            showSection("part2");
+        });
+        el("addPatientBtn").addEventListener("click", () => {
+            const obj = buildExportObject();
+            if (!obj.patientMeta.name || !obj.patientMeta.dateOfService) {
+                alert("Name and Date of Service are required.");
+                return;
+            }
+            savePatient(obj);
+            renderPatientList();
+            alert("Patient added.");
+            // Clear fields
+            el("patientName").value = "";
+            el("dateOfService").value = "";
+            el("patientMRN").value = "";
+            el("race").value = "";
+            el("consentCheckbox").checked = false;
+        });
+        el("loadSelectedPatientBtn").addEventListener("click", () => {
+            const val = el("workflowPatientSelect").value;
+            if (!val) {
+                alert("Please select a patient.");
+                return;
+            }
+            const [name, dateOfService] = val.split("|");
+            loadPatientByName(name, dateOfService);
+            showSection("part2");
         });
         el("workflowPatientSelect").addEventListener("change", (e) => {
             const val = e.target.value;
             if (!val) return;
             const [name, dateOfService] = val.split("|");
-            loadPatientByName(name, dateOfService);
+            const patients = getPatients();
+            const p = patients.find(p => p.patientMeta.name === name && p.patientMeta.dateOfService === dateOfService);
+            if (p) {
+                el("currentPatientName").textContent = p.patientMeta.name || "—";
+                el("currentPatientDate").textContent = p.patientMeta.dateOfService || "—";
+            }
         });
+
+        function showSection(section) {
+            const sections = ["addPatientSection", "selectPatientSection", "part2Section"];
+            sections.forEach(id => el(id).style.display = id === section + "Section" ? "block" : "none");
+            localStorage.setItem(WORKFLOW_KEY, section);
+        }
 
         el("saveBtn").addEventListener("click", () => {
             const obj = saveDraft();
@@ -949,14 +1001,8 @@
         renderPatientList();
 
         // Restore workflow section choice
-        const workflow = localStorage.getItem(WORKFLOW_KEY);
-        if (workflow === "part2") {
-            el("part1Section").style.display = "none";
-            el("part2Section").style.display = "block";
-        } else {
-            el("part1Section").style.display = "block";
-            el("part2Section").style.display = "none";
-        }
+        const workflow = localStorage.getItem(WORKFLOW_KEY) || "addPatient";
+        showSection(workflow);
     </script>
 </body>
 
