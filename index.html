@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>ePSA Offline Part 1 Collector</title>
+    <title>ePSA Simple Data Collector - Non-PHI</title>
     <style>
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -212,296 +212,203 @@
 
 <body>
     <div class="disclaimer" style="background:#f0f7ff;border:1px solid #b3d1ff;border-radius:10px;padding:16px;margin-bottom:20px;font-size:14px;color:#333;">
-        <div style="font-weight:650;margin-bottom:8px;">Purpose & Privacy Notice</div>
+        <div style="font-weight:650;margin-bottom:8px;">Simple Data Collection Tool</div>
         <ul style="margin:0;padding-left:20px;">
-            <li>This tool collects ePSA Part 1 data for educational and follow-up purposes only.</li>
+            <li>This tool collects basic ePSA medical data without personal identifiers.</li>
             <li>All data is stored locally in your browser. No information is sent to any server.</li>
-            <li>You must obtain explicit patient consent before collecting or exporting any data.</li>
-            <li>Exported JSON files may contain protected health information (PHI). Handle them according to your institution’s policies.</li>
-            <li>This is not a substitute for professional medical advice or clinical systems.</li>
+            <li>Focus on essential medical metrics only - no PHI collected.</li>
+            <li>Export data for analysis or research purposes.</li>
+            <li>This is not a substitute for professional medical advice.</li>
         </ul>
     </div>
 
-    <h1>ePSA Part 1 – Offline Data Collector</h1>
+    <h1>ePSA Simple Data Collector</h1>
     <p class="sub">
-        Works offline. Saves locally in your browser. Exports JSON in the same structure as your ePSA Part 1 export.
-        <span class="pill">part: part1</span>
+        Collect essential medical data without personal identifiers. Works offline, stores locally.
+        <span class="pill">Non-PHI Data Only</span>
     </p>
 
-    <div style="margin-bottom:16px;">
-        <label>Workflow Step</label>
-        <div class="btns">
-            <button class="primary" id="showAddPatientBtn">1. Add New Patient</button>
-            <button id="showSelectPatientBtn">2. Select Existing Patient</button>
-            <button id="showPart2Btn">3. Answer Part 2 Questions</button>
-        </div>
-    </div>
-
-    <div id="addPatientSection">
+    <div id="dataCollectionSection">
     <fieldset>
-        <legend>Add New Patient</legend>
+        <legend>Basic Information</legend>
         <div class="grid">
             <div class="col-4">
-                <label>Full Name</label>
-                <input id="patientName" type="text" placeholder="e.g., John Smith" />
+                <label>Age</label>
+                <input id="age" type="number" min="0" max="120" step="1" placeholder="Age in years" />
             </div>
 
             <div class="col-4">
-                <label>Date of Service</label>
-                <input id="dateOfService" type="date" />
-            </div>
-
-            <div class="col-4">
-                <label>MRN</label>
-                <input id="patientMRN" type="text" placeholder="Medical record number" />
-            </div>
-
-            <div class="col-12">
-                <label>Race / Ethnicity</label>
+                <label>Race/Ethnicity</label>
                 <select id="race">
-                    <option value="">Select race/ethnicity</option>
-                    <option value="white">White / Caucasian</option>
-                    <option value="black">Black / African American</option>
-                    <option value="hispanic">Hispanic / Latino</option>
-                    <option value="asian">Asian / Pacific Islander</option>
-                    <option value="other">Other / Mixed</option>
+                    <option value="">Select...</option>
+                    <option value="white">White</option>
+                    <option value="black">Black/African American</option>
+                    <option value="hispanic">Hispanic/Latino</option>
+                    <option value="asian">Asian</option>
+                    <option value="other">Other</option>
                 </select>
             </div>
 
-            <div class="col-12">
-                <div class="consentRow">
-                    <input id="consentCheckbox" type="checkbox" />
-                    <div>
-                        <div style="font-weight:650;">Consent Confirmation (required to export)</div>
-                        <div class="note" style="margin:4px 0 0;">
-                            I confirm the patient has consented to data collection for educational and follow-up
-                            purposes.
-                        </div>
-                    </div>
-                </div>
+            <div class="col-4">
+                <label>Collection Date</label>
+                <input id="collectionDate" type="date" />
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Medical History</legend>
+        <div class="grid">
+            <div class="col-6">
+                <label>Family History of Prostate Cancer</label>
+                <select id="familyHistory">
+                    <option value="">Select...</option>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                    <option value="unknown">Unknown</option>
+                </select>
+            </div>
+
+            <div class="col-6">
+                <label>BRCA Status</label>
+                <select id="brcaStatus">
+                    <option value="">Select...</option>
+                    <option value="no">No mutation</option>
+                    <option value="yes">BRCA mutation</option>
+                    <option value="unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Physical Measurements</legend>
+        <div class="grid">
+            <div class="col-3">
+                <label>Height Unit</label>
+                <select id="heightUnit">
+                    <option value="imperial">imperial (ft/in)</option>
+                    <option value="metric">metric (cm)</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label>Height (ft)</label>
+                <input id="heightFt" type="number" min="0" max="8" step="1" value="5" />
+            </div>
+            <div class="col-3">
+                <label>Height (in)</label>
+                <input id="heightIn" type="number" min="0" max="11" step="1" value="9" />
+            </div>
+            <div class="col-3">
+                <label>Height (cm)</label>
+                <input id="heightCm" type="number" min="0" max="300" step="0.1" value="" placeholder="(metric)" />
+            </div>
+
+            <div class="col-3">
+                <label>Weight Unit</label>
+                <select id="weightUnit">
+                    <option value="lbs">lbs</option>
+                    <option value="kg">kg</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label>Weight</label>
+                <input id="weight" type="number" min="0" max="1500" step="0.1" value="180" />
+            </div>
+            <div class="col-3">
+                <label>Weight (kg)</label>
+                <input id="weightKg" type="number" min="0" max="700" step="0.1" value="" placeholder="auto" />
+            </div>
+            <div class="col-3">
+                <label>BMI</label>
+                <input id="bmi" type="number" step="0.1" value="" placeholder="auto" />
             </div>
 
             <div class="col-12 note">
-                Tip: If you’d rather not store PHI in the exported JSON, tell me and I’ll switch this to hashing
-                phone/MRN before export.
+                BMI is computed automatically when height + weight are present.
             </div>
-        </div>
-        <div class="btns" style="margin-top:12px;">
-            <button class="primary" id="addPatientBtn">Add Patient</button>
         </div>
     </fieldset>
-    </div>
 
-    <div id="selectPatientSection" style="display:none;">
-        <fieldset>
-            <legend>Select Existing Patient</legend>
-            <div style="margin-bottom:12px;">
-                <label>Choose Patient</label>
-                <select id="workflowPatientSelect" style="width:100%; max-width:400px;"></select>
+    <fieldset>
+        <legend>Lifestyle Factors</legend>
+        <div class="grid">
+            <div class="col-4">
+                <label>Exercise Frequency</label>
+                <select id="exercise">
+                    <option value="0">Regular (3+/week)</option>
+                    <option value="1">Some (1–2/week)</option>
+                    <option value="2">None</option>
+                </select>
             </div>
-            <div class="btns">
-                <button class="primary" id="loadSelectedPatientBtn">Load Patient</button>
+            <div class="col-4">
+                <label>Smoking Status</label>
+                <select id="smoking">
+                    <option value="">Select...</option>
+                    <option value="never">Never</option>
+                    <option value="former">Former</option>
+                    <option value="current">Current</option>
+                </select>
             </div>
-        </fieldset>
-    </div>
+            <div class="col-4">
+                <label>Chemical Exposure</label>
+                <select id="chemicalExposure">
+                    <option value="">Select...</option>
+                    <option value="no">No known exposure</option>
+                    <option value="yes">Known exposure</option>
+                    <option value="unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Urinary Symptoms (IPSS)</legend>
+        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past month, how often have you had:</div>
+        <div id="ipssGrid"></div>
+        <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sexual Health (SHIM)</legend>
+        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past 6 months:</div>
+        <div id="shimGrid"></div>
+        <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Optional Clinical Data</legend>
+        <div class="grid">
+            <div class="col-4">
+                <label>PSA (ng/mL)</label>
+                <input id="psa" type="number" step="0.01" min="0" max="200" placeholder="optional" />
+            </div>
+            <div class="col-4">
+                <label>PI-RADS Score</label>
+                <select id="pirads">
+                    <option value="">(unknown)</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <label>Know PSA Result</label>
+                <select id="knowPsa">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
 
     <div class="btns">
         <button class="primary" id="saveBtn">Save Locally</button>
         <button id="exportBtn">Export JSON</button>
         <button id="previewBtn">Preview JSON</button>
-        <button class="danger" id="clearBtn">Clear Local Draft</button>
+        <button class="danger" id="clearBtn">Clear Form</button>
     </div>
-
-    <div class="btns">
-        <button id="downloadAllBtn">Download All Patients</button>
-        <button id="importPatientsBtn">Import Patients</button>
-        <input type="file" id="importFile" accept=".json" style="display:none;" />
-    </div>
-
-    <div id="part2Section" style="display:none;">
-        <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">
-            Patient: <strong id="currentPatientName">—</strong> | Date: <strong id="currentPatientDate">—</strong>
-        </div>
-        <fieldset>
-            <legend>Core</legend>
-            <div class="grid">
-                <div class="col-3">
-                    <label>Age (years)</label>
-                    <input id="age" type="number" min="18" max="120" step="1" value="50" />
-                </div>
-
-                <div class="col-3">
-                    <label>Family History (first-degree)</label>
-                    <select id="familyHistory">
-                        <option value="0">0 (No)</option>
-                        <option value="1">1 (Yes)</option>
-                    </select>
-                </div>
-
-                <div class="col-3">
-                    <label>Inflammation History</label>
-                    <select id="inflammationHistory">
-                        <option value="0">0 (No)</option>
-                        <option value="1">1 (Yes)</option>
-                    </select>
-                </div>
-
-                <div class="col-3">
-                    <label>BRCA Status (optional)</label>
-                    <select id="brcaStatus">
-                        <option value="unknown">unknown</option>
-                        <option value="yes">yes</option>
-                        <option value="no">no</option>
-                    </select>
-                </div>
-
-                <div class="col-3">
-                    <label>Smoking Status</label>
-                    <select id="smoking">
-                        <option value="2">Current</option>
-                        <option value="1">Former</option>
-                        <option value="0">Never</option>
-                    </select>
-                </div>
-
-                <div class="col-3">
-                    <label>Chemical Exposure (optional)</label>
-                    <select id="chemicalExposure">
-                        <option value="unknown">unknown</option>
-                        <option value="yes">yes</option>
-                        <option value="no">no</option>
-                    </select>
-                </div>
-
-                <div class="col-3">
-                    <label>Diet Pattern</label>
-                    <select id="dietPattern">
-                        <option value="">Select diet pattern</option>
-                        <option value="western">Western / Standard American</option>
-                        <option value="mediterranean">Mediterranean</option>
-                        <option value="dash">DASH-style</option>
-                        <option value="plant-based">Plant-based (Vegetarian / Vegan)</option>
-                        <option value="pescatarian">Pescatarian</option>
-                        <option value="low-carb-keto">Low-carb / Keto</option>
-                        <option value="other">Other / Prefer not to say</option>
-                    </select>
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Height / Weight → BMI</legend>
-            <div class="grid">
-                <div class="col-3">
-                    <label>Height Unit</label>
-                    <select id="heightUnit">
-                        <option value="imperial">imperial (ft/in)</option>
-                        <option value="metric">metric (cm)</option>
-                    </select>
-                </div>
-                <div class="col-3">
-                    <label>Height (ft)</label>
-                    <input id="heightFt" type="number" min="0" max="8" step="1" value="5" />
-                </div>
-                <div class="col-3">
-                    <label>Height (in)</label>
-                    <input id="heightIn" type="number" min="0" max="11" step="1" value="9" />
-                </div>
-                <div class="col-3">
-                    <label>Height (cm)</label>
-                    <input id="heightCm" type="number" min="0" max="300" step="0.1" value="" placeholder="(metric)" />
-                </div>
-
-                <div class="col-3">
-                    <label>Weight Unit</label>
-                    <select id="weightUnit">
-                        <option value="lbs">lbs</option>
-                        <option value="kg">kg</option>
-                    </select>
-                </div>
-                <div class="col-3">
-                    <label>Weight</label>
-                    <input id="weight" type="number" min="0" max="1500" step="0.1" value="180" />
-                </div>
-                <div class="col-3">
-                    <label>Weight (kg)</label>
-                    <input id="weightKg" type="number" min="0" max="700" step="0.1" value="" placeholder="auto" />
-                </div>
-                <div class="col-3">
-                    <label>BMI</label>
-                    <input id="bmi" type="number" step="0.1" value="" placeholder="auto" />
-                </div>
-
-                <div class="col-12 note">
-                    BMI is computed automatically when height + weight are present.
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Exercise</legend>
-            <div class="grid">
-                <div class="col-4">
-                    <label>Exercise Code</label>
-                    <select id="exercise">
-                        <option value="0">0 = Regular (3+/week)</option>
-                        <option value="1">1 = Some (1–2/week)</option>
-                        <option value="2">2 = None</option>
-                    </select>
-                </div>
-                <div class="col-12 note">
-                    Stored as <code>exercise</code> (0/1/2) in JSON.
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Urinary Symptoms (IPSS)</legend>
-            <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past month, how often have you had:</div>
-            <div id="ipssGrid"></div>
-            <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Sexual Health (SHIM)</legend>
-            <div class="note" style="margin-bottom:16px;font-size:14px;color:#7F8C8D;">Over the past 6 months:</div>
-            <div id="shimGrid"></div>
-            <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Optional PSA / MRI (if known)</legend>
-            <div class="grid">
-                <div class="col-3">
-                    <label>PSA (ng/mL)</label>
-                    <input id="psa" type="number" step="0.01" min="0" max="200" placeholder="optional" />
-                </div>
-                <div class="col-3">
-                    <label>PI-RADS (2–5)</label>
-                    <select id="pirads">
-                        <option value="">(unknown)</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-            </div>
-        </fieldset>
-    </div>
-
-    <h3>Saved Patients</h3>
-    <div style="margin-bottom:12px;">
-        <label>Select Patient (quick load)</label>
-        <select id="patientSelect" style="width:100%; max-width:400px;"></select>
-    </div>
-    <div id="patientList"></div>
-    <div class="note" id="noPatientsNote">No saved patients yet. Use "Save Locally" to add patients here.</div>
-
-    <p class="note">
-        Local draft key: <code>epsa_offline_part1_draft</code>. Export shape:
-        <code>{version, exportDate, part, patientMeta, formData}</code>.
-    </p>
 
     <h3>Preview</h3>
     <pre id="preview">{}</pre>
@@ -677,19 +584,15 @@
             const patients = getPatients();
             const listEl = el("patientList");
             const noteEl = el("noPatientsNote");
-            const selectEl = el("patientSelect");
             const workflowSelectEl = el("workflowPatientSelect");
             listEl.innerHTML = "";
-            selectEl.innerHTML = "<option value=\"\">-- choose --</option>";
             workflowSelectEl.innerHTML = "<option value=\"\">-- choose patient --</option>";
             if (patients.length === 0) {
                 noteEl.style.display = "block";
-                selectEl.style.display = "none";
                 workflowSelectEl.style.display = "none";
                 return;
             }
             noteEl.style.display = "none";
-            selectEl.style.display = "block";
             workflowSelectEl.style.display = "block";
             patients.forEach(p => {
                 const card = document.createElement("div");
@@ -705,6 +608,7 @@
                 card.addEventListener("click", (e) => {
                     if (!e.target.matches("button")) {
                         loadPatientByName(p.patientMeta.name, p.patientMeta.dateOfService);
+                        showSection("part2");
                     }
                 });
                 listEl.appendChild(card);
@@ -712,8 +616,7 @@
                 const opt = document.createElement("option");
                 opt.value = `${p.patientMeta.name}|${p.patientMeta.dateOfService}`;
                 opt.textContent = `${p.patientMeta.name || "Unnamed"} (${p.patientMeta.dateOfService || "No date"})`;
-                selectEl.appendChild(opt);
-                workflowSelectEl.appendChild(opt.cloneNode(true));
+                workflowSelectEl.appendChild(opt);
             });
         }
         window.loadPatientByName = function(name, dateOfService) {
@@ -952,12 +855,6 @@
             alert("Saved locally and added to patient list.");
         });
 
-        el("patientSelect").addEventListener("change", (e) => {
-            const val = e.target.value;
-            if (!val) return;
-            const [name, dateOfService] = val.split("|");
-            loadPatientByName(name, dateOfService);
-        });
 
         el("downloadAllBtn").addEventListener("click", downloadAllPatients);
         el("importPatientsBtn").addEventListener("click", () => {
