@@ -211,12 +211,36 @@
 </head>
 
 <body>
+    <div class="disclaimer" style="background:#f0f7ff;border:1px solid #b3d1ff;border-radius:10px;padding:16px;margin-bottom:20px;font-size:14px;color:#333;">
+        <div style="font-weight:650;margin-bottom:8px;">Purpose & Privacy Notice</div>
+        <ul style="margin:0;padding-left:20px;">
+            <li>This tool collects ePSA Part 1 data for educational and follow-up purposes only.</li>
+            <li>All data is stored locally in your browser. No information is sent to any server.</li>
+            <li>You must obtain explicit patient consent before collecting or exporting any data.</li>
+            <li>Exported JSON files may contain protected health information (PHI). Handle them according to your institution’s policies.</li>
+            <li>This is not a substitute for professional medical advice or clinical systems.</li>
+        </ul>
+    </div>
+
     <h1>ePSA Part 1 – Offline Data Collector</h1>
     <p class="sub">
         Works offline. Saves locally in your browser. Exports JSON in the same structure as your ePSA Part 1 export.
         <span class="pill">part: part1</span>
     </p>
 
+    <div style="margin-bottom:16px;">
+        <label>Select Patient (required)</label>
+        <select id="workflowPatientSelect" style="width:100%; max-width:400px;"></select>
+    </div>
+    <div style="margin-bottom:16px;">
+        <label>Choose Section</label>
+        <div class="btns">
+            <button class="primary" id="showPart1Btn">Part 1 Questions</button>
+            <button id="showPart2Btn">Part 2 Questions</button>
+        </div>
+    </div>
+
+    <div id="part1Section">
     <fieldset>
         <legend>Patient Information</legend>
         <div class="grid">
@@ -454,6 +478,13 @@
         <input type="file" id="importFile" accept=".json" style="display:none;" />
     </div>
 
+    <div id="part2Section" style="display:none;">
+        <fieldset>
+            <legend>Part 2 Questions</legend>
+            <div class="note">Part 2 questions will be added here. For now, this is a placeholder.</div>
+        </fieldset>
+    </div>
+
     <h3>Saved Patients</h3>
     <div style="margin-bottom:12px;">
         <label>Select Patient (quick load)</label>
@@ -473,6 +504,7 @@
     <script>
         const DRAFT_KEY = "epsa_offline_part1_draft";
         const PATIENTS_KEY = "epsa_offline_part1_patients";
+        const WORKFLOW_KEY = "epsa_offline_workflow";
 
         function el(id) { return document.getElementById(id); }
         function numOrEmpty(v) {
@@ -641,15 +673,19 @@
             const listEl = el("patientList");
             const noteEl = el("noPatientsNote");
             const selectEl = el("patientSelect");
+            const workflowSelectEl = el("workflowPatientSelect");
             listEl.innerHTML = "";
             selectEl.innerHTML = "<option value=\"\">-- choose --</option>";
+            workflowSelectEl.innerHTML = "<option value=\"\">-- choose patient --</option>";
             if (patients.length === 0) {
                 noteEl.style.display = "block";
                 selectEl.style.display = "none";
+                workflowSelectEl.style.display = "none";
                 return;
             }
             noteEl.style.display = "none";
             selectEl.style.display = "block";
+            workflowSelectEl.style.display = "block";
             patients.forEach(p => {
                 const card = document.createElement("div");
                 card.className = "patientCard";
@@ -672,6 +708,7 @@
                 opt.value = `${p.patientMeta.name}|${p.patientMeta.dateOfService}`;
                 opt.textContent = `${p.patientMeta.name || "Unnamed"} (${p.patientMeta.dateOfService || "No date"})`;
                 selectEl.appendChild(opt);
+                workflowSelectEl.appendChild(opt.cloneNode(true));
             });
         }
         window.loadPatientByName = function(name, dateOfService) {
@@ -849,6 +886,23 @@
         }
 
         // Wire buttons
+        el("showPart1Btn").addEventListener("click", () => {
+            el("part1Section").style.display = "block";
+            el("part2Section").style.display = "none";
+            localStorage.setItem(WORKFLOW_KEY, "part1");
+        });
+        el("showPart2Btn").addEventListener("click", () => {
+            el("part1Section").style.display = "none";
+            el("part2Section").style.display = "block";
+            localStorage.setItem(WORKFLOW_KEY, "part2");
+        });
+        el("workflowPatientSelect").addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (!val) return;
+            const [name, dateOfService] = val.split("|");
+            loadPatientByName(name, dateOfService);
+        });
+
         el("saveBtn").addEventListener("click", () => {
             const obj = saveDraft();
             savePatient(obj);
@@ -904,6 +958,16 @@
         computeBMI();
         autoPreview();
         renderPatientList();
+
+        // Restore workflow section choice
+        const workflow = localStorage.getItem(WORKFLOW_KEY);
+        if (workflow === "part2") {
+            el("part1Section").style.display = "none";
+            el("part2Section").style.display = "block";
+        } else {
+            el("part1Section").style.display = "block";
+            el("part2Section").style.display = "none";
+        }
     </script>
 </body>
 
