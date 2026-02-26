@@ -154,6 +154,59 @@
         code {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
         }
+
+        .patientCard {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 8px 0;
+            background: #fafafa;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .patientCard:hover {
+            background: #f0f0f0;
+        }
+        .patientCard .name {
+            font-weight: 650;
+            margin-bottom: 4px;
+        }
+        .patientCard .meta {
+            font-size: 12px;
+            color: #666;
+        }
+        .patientCard .actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        .patientCard button {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+
+        .qBtns {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .qBtn {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .qBtn:hover {
+            background: #eef;
+        }
+        .qBtn.selected {
+            background: #1f4e79;
+            color: #fff;
+            border-color: #1f4e79;
+        }
     </style>
 </head>
 
@@ -366,13 +419,13 @@
 
     <fieldset>
         <legend>IPSS (7 questions, 0–5 each)</legend>
-        <div class="grid" id="ipssGrid"></div>
+        <div id="ipssGrid"></div>
         <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
     </fieldset>
 
     <fieldset>
         <legend>SHIM (5 questions, 0–5 each)</legend>
-        <div class="grid" id="shimGrid"></div>
+        <div id="shimGrid"></div>
         <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
     </fieldset>
 
@@ -403,6 +456,10 @@
         <button class="danger" id="clearBtn">Clear Local Draft</button>
     </div>
 
+    <h3>Saved Patients</h3>
+    <div id="patientList"></div>
+    <div class="note" id="noPatientsNote">No saved patients yet. Use "Save Locally" to add patients here.</div>
+
     <p class="note">
         Local draft key: <code>epsa_offline_part1_draft</code>. Export shape:
         <code>{version, exportDate, part, patientMeta, formData}</code>.
@@ -413,6 +470,7 @@
 
     <script>
         const DRAFT_KEY = "epsa_offline_part1_draft";
+        const PATIENTS_KEY = "epsa_offline_part1_patients";
 
         function el(id) { return document.getElementById(id); }
         function numOrEmpty(v) {
@@ -426,7 +484,7 @@
             return Number.isFinite(n) ? n : "";
         }
 
-        function buildQuestions(containerId, count, prefix) {
+        function buildQuestions(containerId, count, prefix, labels) {
             const grid = el(containerId);
             grid.innerHTML = "";
             for (let i = 1; i <= count; i++) {
@@ -434,25 +492,54 @@
                 wrap.className = "col-3";
                 const lab = document.createElement("label");
                 lab.textContent = `${prefix} Q${i} (0–5)`;
-                const inp = document.createElement("input");
-                inp.type = "number";
-                inp.min = "0";
-                inp.max = "5";
-                inp.step = "1";
-                inp.value = "0";
-                inp.id = `${prefix.toLowerCase()}_${i}`;
-                inp.addEventListener("input", () => {
-                    computeBMI();
-                    autoPreview();
-                });
+                const btnsWrap = document.createElement("div");
+                btnsWrap.className = "qBtns";
+                for (let v = 0; v <= 5; v++) {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "qBtn";
+                    btn.textContent = labels ? labels[i-1][v] : v;
+                    btn.dataset.value = v;
+                    btn.addEventListener("click", () => {
+                        const allBtns = btnsWrap.querySelectorAll(".qBtn");
+                        allBtns.forEach(b => b.classList.remove("selected"));
+                        btn.classList.add("selected");
+                        const hidden = wrap.querySelector("input");
+                        hidden.value = v;
+                        computeBMI();
+                        autoPreview();
+                    });
+                    btnsWrap.appendChild(btn);
+                }
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.id = `${prefix.toLowerCase()}_${i}`;
+                hidden.value = "0";
                 wrap.appendChild(lab);
-                wrap.appendChild(inp);
+                wrap.appendChild(btnsWrap);
+                wrap.appendChild(hidden);
                 grid.appendChild(wrap);
             }
         }
 
-        buildQuestions("ipssGrid", 7, "IPSS");
-        buildQuestions("shimGrid", 5, "SHIM");
+        const ipssLabels = [
+            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
+            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
+            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
+            ["None","1 time","2 times","3 times","4 times","5 times or more"],
+            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
+            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
+            ["Delighted","Pleased","Mostly satisfied","Mixed about equally","Dissatisfied","Unhappy"]
+        ];
+        const shimLabels = [
+            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
+            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
+            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
+            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
+            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"]
+        ];
+        buildQuestions("ipssGrid", 7, "IPSS", ipssLabels);
+        buildQuestions("shimGrid", 5, "SHIM", shimLabels);
 
         function computeBMI() {
             const heightUnit = el("heightUnit").value;
@@ -508,6 +595,69 @@
             }
             return arr;
         }
+
+        function getPatients() {
+            try {
+                const s = localStorage.getItem(PATIENTS_KEY);
+                return s ? JSON.parse(s) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+        function savePatient(obj) {
+            const patients = getPatients();
+            const idx = patients.findIndex(p => p.patientMeta.name === obj.patientMeta.name && p.patientMeta.dateOfService === obj.patientMeta.dateOfService);
+            if (idx >= 0) patients[idx] = obj;
+            else patients.push(obj);
+            localStorage.setItem(PATIENTS_KEY, JSON.stringify(patients));
+        }
+        function deletePatient(name, dateOfService) {
+            const patients = getPatients().filter(p => !(p.patientMeta.name === name && p.patientMeta.dateOfService === dateOfService));
+            localStorage.setItem(PATIENTS_KEY, JSON.stringify(patients));
+        }
+        function renderPatientList() {
+            const patients = getPatients();
+            const listEl = el("patientList");
+            const noteEl = el("noPatientsNote");
+            listEl.innerHTML = "";
+            if (patients.length === 0) {
+                noteEl.style.display = "block";
+                return;
+            }
+            noteEl.style.display = "none";
+            patients.forEach(p => {
+                const card = document.createElement("div");
+                card.className = "patientCard";
+                card.innerHTML = `
+                    <div class="name">${p.patientMeta.name || "Unnamed"}</div>
+                    <div class="meta">${p.patientMeta.dateOfService || "No date"} | MRN: ${p.patientMeta.mrn || "N/A"}</div>
+                    <div class="actions">
+                        <button onclick="loadPatientByName('${p.patientMeta.name}', '${p.patientMeta.dateOfService}')">Load</button>
+                        <button class="danger" onclick="deletePatientByName('${p.patientMeta.name}', '${p.patientMeta.dateOfService}')">Delete</button>
+                    </div>
+                `;
+                card.addEventListener("click", (e) => {
+                    if (!e.target.matches("button")) {
+                        loadPatientByName(p.patientMeta.name, p.patientMeta.dateOfService);
+                    }
+                });
+                listEl.appendChild(card);
+            });
+        }
+        window.loadPatientByName = function(name, dateOfService) {
+            const patients = getPatients();
+            const p = patients.find(p => p.patientMeta.name === name && p.patientMeta.dateOfService === dateOfService);
+            if (p) {
+                applyDraft(p);
+                autoPreview();
+            }
+        };
+        window.deletePatientByName = function(name, dateOfService) {
+            if (confirm(`Delete patient: ${name} (${dateOfService})?`)) {
+                deletePatient(name, dateOfService);
+                renderPatientList();
+            }
+        };
 
         function buildExportObject() {
             const patientMeta = {
@@ -643,8 +793,10 @@
         // Wire buttons
         el("saveBtn").addEventListener("click", () => {
             const obj = saveDraft();
+            savePatient(obj);
+            renderPatientList();
             el("preview").textContent = JSON.stringify(obj, null, 2);
-            alert("Saved locally.");
+            alert("Saved locally and added to patient list.");
         });
 
         el("exportBtn").addEventListener("click", () => {
@@ -676,6 +828,7 @@
         if (draft) applyDraft(draft);
         computeBMI();
         autoPreview();
+        renderPatientList();
     </script>
 </body>
 
