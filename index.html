@@ -463,6 +463,10 @@
     </div>
 
     <h3>Saved Patients</h3>
+    <div style="margin-bottom:12px;">
+        <label>Select Patient (quick load)</label>
+        <select id="patientSelect" style="width:100%; max-width:400px;"></select>
+    </div>
     <div id="patientList"></div>
     <div class="note" id="noPatientsNote">No saved patients yet. Use "Save Locally" to add patients here.</div>
 
@@ -625,12 +629,16 @@
             const patients = getPatients();
             const listEl = el("patientList");
             const noteEl = el("noPatientsNote");
+            const selectEl = el("patientSelect");
             listEl.innerHTML = "";
+            selectEl.innerHTML = "<option value=\"\">-- choose --</option>";
             if (patients.length === 0) {
                 noteEl.style.display = "block";
+                selectEl.style.display = "none";
                 return;
             }
             noteEl.style.display = "none";
+            selectEl.style.display = "block";
             patients.forEach(p => {
                 const card = document.createElement("div");
                 card.className = "patientCard";
@@ -648,6 +656,11 @@
                     }
                 });
                 listEl.appendChild(card);
+
+                const opt = document.createElement("option");
+                opt.value = `${p.patientMeta.name}|${p.patientMeta.dateOfService}`;
+                opt.textContent = `${p.patientMeta.name || "Unnamed"} (${p.patientMeta.dateOfService || "No date"})`;
+                selectEl.appendChild(opt);
             });
         }
         window.loadPatientByName = function(name, dateOfService) {
@@ -833,6 +846,13 @@
             renderPatientList();
             el("preview").textContent = JSON.stringify(obj, null, 2);
             alert("Saved locally and added to patient list.");
+        });
+
+        el("patientSelect").addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (!val) return;
+            const [name, dateOfService] = val.split("|");
+            loadPatientByName(name, dateOfService);
         });
 
         el("downloadAllBtn").addEventListener("click", downloadAllPatients);
