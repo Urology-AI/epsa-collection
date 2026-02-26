@@ -268,16 +268,15 @@
                 <input id="age" type="number" min="18" max="120" step="1" value="50" />
             </div>
 
-            <div class="col-3">
-                <label>Race</label>
+            <div class="col-4">
+                <label>Race / Ethnicity</label>
                 <select id="race">
-                    <option value="black">black</option>
-                    <option value="white">white</option>
-                    <option value="asian">asian</option>
-                    <option value="native-american">native-american</option>
-                    <option value="pacific-islander">pacific-islander</option>
-                    <option value="other">other</option>
-                    <option value="unknown">unknown</option>
+                    <option value="">Select race/ethnicity</option>
+                    <option value="white">White / Caucasian</option>
+                    <option value="black">Black / African American</option>
+                    <option value="hispanic">Hispanic / Latino</option>
+                    <option value="asian">Asian / Pacific Islander</option>
+                    <option value="other">Other / Mixed</option>
                 </select>
             </div>
 
@@ -308,11 +307,11 @@
             </div>
 
             <div class="col-3">
-                <label>Smoking (optional)</label>
+                <label>Smoking Status</label>
                 <select id="smoking">
-                    <option value="0">0 (unknown)</option>
-                    <option value="1">1 (never)</option>
-                    <option value="2">2 (former/current)</option>
+                    <option value="2">Current</option>
+                    <option value="1">Former</option>
+                    <option value="0">Never</option>
                 </select>
             </div>
 
@@ -326,28 +325,19 @@
             </div>
 
             <div class="col-3">
-                <label>Diet Pattern (optional)</label>
+                <label>Diet Pattern</label>
                 <select id="dietPattern">
-                    <option value="mixed">mixed</option>
-                    <option value="plant-forward">plant-forward</option>
-                    <option value="low-carb">low-carb</option>
-                    <option value="other">other</option>
-                    <option value="unknown">unknown</option>
+                    <option value="">Select diet pattern</option>
+                    <option value="western">Western / Standard American</option>
+                    <option value="mediterranean">Mediterranean</option>
+                    <option value="dash">DASH-style</option>
+                    <option value="plant-based">Plant-based (Vegetarian / Vegan)</option>
+                    <option value="pescatarian">Pescatarian</option>
+                    <option value="low-carb-keto">Low-carb / Keto</option>
+                    <option value="other">Other / Prefer not to say</option>
                 </select>
             </div>
 
-            <div class="col-3">
-                <label>Geographic Origin (optional)</label>
-                <select id="geographicOrigin">
-                    <option value="north-america">north-america</option>
-                    <option value="south-america">south-america</option>
-                    <option value="europe">europe</option>
-                    <option value="africa">africa</option>
-                    <option value="asia">asia</option>
-                    <option value="other">other</option>
-                    <option value="unknown">unknown</option>
-                </select>
-            </div>
         </div>
     </fieldset>
 
@@ -501,26 +491,27 @@
                 const wrap = document.createElement("div");
                 wrap.className = "col-3";
                 const lab = document.createElement("label");
-                lab.textContent = `${prefix} Q${i} (0–5)`;
+                lab.textContent = `${prefix} Q${i}`;
                 const btnsWrap = document.createElement("div");
                 btnsWrap.className = "qBtns";
-                for (let v = 0; v <= 5; v++) {
+                const items = Array.isArray(labels[i-1][0]) ? labels[i-1] : labels[i-1].map((txt, v) => [v, txt]);
+                items.forEach(([score, txt]) => {
                     const btn = document.createElement("button");
                     btn.type = "button";
                     btn.className = "qBtn";
-                    btn.textContent = labels ? labels[i-1][v] : v;
-                    btn.dataset.value = v;
+                    btn.textContent = txt;
+                    btn.dataset.value = score;
                     btn.addEventListener("click", () => {
                         const allBtns = btnsWrap.querySelectorAll(".qBtn");
                         allBtns.forEach(b => b.classList.remove("selected"));
                         btn.classList.add("selected");
                         const hidden = wrap.querySelector("input");
-                        hidden.value = v;
+                        hidden.value = score;
                         computeBMI();
                         autoPreview();
                     });
                     btnsWrap.appendChild(btn);
-                }
+                });
                 const hidden = document.createElement("input");
                 hidden.type = "hidden";
                 hidden.id = `${prefix.toLowerCase()}_${i}`;
@@ -533,20 +524,20 @@
         }
 
         const ipssLabels = [
-            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
-            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
-            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
-            ["None","1 time","2 times","3 times","4 times","5 times or more"],
-            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
-            ["Not at all","Less than 1 time in 5","Less than half the time","About half the time","More than half the time","Almost always"],
-            ["Delighted","Pleased","Mostly satisfied","Mixed about equally","Dissatisfied","Unhappy"]
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"],
+            ["Not at all","< 1 in 5","< Half","~ Half","> Half","Always"]
         ];
         const shimLabels = [
-            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
-            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
-            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
-            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"],
-            ["Always or almost always","Most times","Sometimes","A few times","Never or almost never"]
+            [[1,"Very low"],[2,"Low"],[3,"Moderate"],[4,"High"],[5,"Very high"]],
+            [[0,"No activity"],[1,"Almost never"],[2,"A few times"],[3,"Sometimes"],[4,"Most times"],[5,"Almost always"]],
+            [[0,"Did not attempt"],[1,"Almost never"],[2,"A few times"],[3,"Sometimes"],[4,"Most times"],[5,"Almost always"]],
+            [[0,"Did not attempt"],[1,"Extremely difficult"],[2,"Very difficult"],[3,"Difficult"],[4,"Slightly difficult"],[5,"Not difficult"]],
+            [[0,"Did not attempt"],[1,"Almost never"],[2,"A few times"],[3,"Sometimes"],[4,"Most times"],[5,"Almost always"]]
         ];
         buildQuestions("ipssGrid", 7, "IPSS", ipssLabels);
         buildQuestions("shimGrid", 5, "SHIM", shimLabels);
@@ -708,7 +699,6 @@
                 smoking: intOrEmpty(el("smoking").value) || 0,
                 chemicalExposure: el("chemicalExposure").value,
                 dietPattern: el("dietPattern").value,
-                geographicOrigin: el("geographicOrigin").value,
 
                 ipss: getIPSS(),
                 shim: getSHIM()
@@ -773,8 +763,7 @@
             el("exercise").value = String(d.exercise ?? 0);
             el("smoking").value = String(d.smoking ?? 0);
             el("chemicalExposure").value = d.chemicalExposure ?? "unknown";
-            el("dietPattern").value = d.dietPattern ?? "unknown";
-            el("geographicOrigin").value = d.geographicOrigin ?? "unknown";
+            el("dietPattern").value = d.dietPattern ?? "";
 
             const ipss = Array.isArray(d.ipss) ? d.ipss : [];
             for (let i = 1; i <= 7; i++) {
