@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ePSA Offline Part 1 Collector</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            margin: 24px;
+            max-width: 980px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+        }
+
+        .sub {
+            color: #555;
+            margin: 0 0 20px;
+        }
+
+        fieldset {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 14px 0;
+        }
+
+        legend {
+            padding: 0 8px;
+            font-weight: 650;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 10px;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        .col-6 {
+            grid-column: span 6;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        .col-3 {
+            grid-column: span 3;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: #333;
+            margin: 2px 0 6px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        .btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        button {
+            padding: 10px 14px;
+            border: 1px solid #aaa;
+            border-radius: 10px;
+            background: #f7f7f7;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button.primary {
+            background: #1f4e79;
+            color: #fff;
+            border-color: #1f4e79;
+        }
+
+        button.danger {
+            background: #fff0f0;
+            border-color: #d33;
+            color: #a00;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #eef;
+            font-size: 12px;
+        }
+
+        .muted {
+            color: #666;
+        }
+
+        pre {
+            background: #0b1020;
+            color: #d8e3ff;
+            padding: 14px;
+            border-radius: 10px;
+            overflow: auto;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .consentRow {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 10px;
+            border: 1px dashed #bbb;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .consentRow input {
+            width: auto;
+            margin-top: 3px;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>ePSA Part 1 – Offline Data Collector</h1>
+    <p class="sub">
+        Works offline. Saves locally in your browser. Exports JSON in the same structure as your ePSA Part 1 export.
+        <span class="pill">part: part1</span>
+    </p>
+
+    <fieldset>
+        <legend>Patient Information</legend>
+        <div class="grid">
+            <div class="col-4">
+                <label>Full Name</label>
+                <input id="patientName" type="text" placeholder="e.g., John Smith" />
+            </div>
+
+            <div class="col-4">
+                <label>Phone Number</label>
+                <input id="patientPhone" type="tel" placeholder="e.g., 555-123-4567" />
+            </div>
+
+            <div class="col-4">
+                <label>MRN</label>
+                <input id="patientMRN" type="text" placeholder="Medical record number" />
+            </div>
+
+            <div class="col-4">
+                <label>Date of Service</label>
+                <input id="dateOfService" type="date" />
+            </div>
+
+            <div class="col-12">
+                <div class="consentRow">
+                    <input id="consentCheckbox" type="checkbox" />
+                    <div>
+                        <div style="font-weight:650;">Consent Confirmation (required to export)</div>
+                        <div class="note" style="margin:4px 0 0;">
+                            I confirm the patient has consented to data collection for educational and follow-up
+                            purposes.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 note">
+                Tip: If you’d rather not store PHI in the exported JSON, tell me and I’ll switch this to hashing
+                phone/MRN before export.
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Core</legend>
+        <div class="grid">
+            <div class="col-3">
+                <label>Age (years)</label>
+                <input id="age" type="number" min="18" max="120" step="1" value="50" />
+            </div>
+
+            <div class="col-3">
+                <label>Race</label>
+                <select id="race">
+                    <option value="black">black</option>
+                    <option value="white">white</option>
+                    <option value="asian">asian</option>
+                    <option value="native-american">native-american</option>
+                    <option value="pacific-islander">pacific-islander</option>
+                    <option value="other">other</option>
+                    <option value="unknown">unknown</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label>Family History (first-degree)</label>
+                <select id="familyHistory">
+                    <option value="0">0 (No)</option>
+                    <option value="1">1 (Yes)</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label>Inflammation History</label>
+                <select id="inflammationHistory">
+                    <option value="0">0 (No)</option>
+                    <option value="1">1 (Yes)</option>
+                </select>
+            </div>
+
+            <!-- Optional extra fields (kept to match your existing export shape) -->
+            <div class="col-3">
+                <label>BRCA Status (optional)</label>
+                <select id="brcaStatus">
+                    <option value="unknown">unknown</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label>Smoking (optional)</label>
+                <select id="smoking">
+                    <option value="0">0 (unknown)</option>
+                    <option value="1">1 (never)</option>
+                    <option value="2">2 (former/current)</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label>Chemical Exposure (optional)</label>
+                <select id="chemicalExposure">
+                    <option value="unknown">unknown</option>
+                    <option value="yes">yes</option>
+                    <option value="no">no</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label>Diet Pattern (optional)</label>
+                <select id="dietPattern">
+                    <option value="mixed">mixed</option>
+                    <option value="plant-forward">plant-forward</option>
+                    <option value="low-carb">low-carb</option>
+                    <option value="other">other</option>
+                    <option value="unknown">unknown</option>
+                </select>
+            </div>
+
+            <div class="col-3">
+                <label>Geographic Origin (optional)</label>
+                <select id="geographicOrigin">
+                    <option value="north-america">north-america</option>
+                    <option value="south-america">south-america</option>
+                    <option value="europe">europe</option>
+                    <option value="africa">africa</option>
+                    <option value="asia">asia</option>
+                    <option value="other">other</option>
+                    <option value="unknown">unknown</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Height / Weight → BMI</legend>
+        <div class="grid">
+            <div class="col-3">
+                <label>Height Unit</label>
+                <select id="heightUnit">
+                    <option value="imperial">imperial (ft/in)</option>
+                    <option value="metric">metric (cm)</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label>Height (ft)</label>
+                <input id="heightFt" type="number" min="0" max="8" step="1" value="5" />
+            </div>
+            <div class="col-3">
+                <label>Height (in)</label>
+                <input id="heightIn" type="number" min="0" max="11" step="1" value="9" />
+            </div>
+            <div class="col-3">
+                <label>Height (cm)</label>
+                <input id="heightCm" type="number" min="0" max="300" step="0.1" value="" placeholder="(metric)" />
+            </div>
+
+            <div class="col-3">
+                <label>Weight Unit</label>
+                <select id="weightUnit">
+                    <option value="lbs">lbs</option>
+                    <option value="kg">kg</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label>Weight</label>
+                <input id="weight" type="number" min="0" max="1500" step="0.1" value="180" />
+            </div>
+            <div class="col-3">
+                <label>Weight (kg)</label>
+                <input id="weightKg" type="number" min="0" max="700" step="0.1" value="" placeholder="auto" />
+            </div>
+            <div class="col-3">
+                <label>BMI</label>
+                <input id="bmi" type="number" step="0.1" value="" placeholder="auto" />
+            </div>
+
+            <div class="col-12 note">
+                BMI is computed automatically when height + weight are present.
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Exercise</legend>
+        <div class="grid">
+            <div class="col-4">
+                <label>Exercise Code</label>
+                <select id="exercise">
+                    <option value="0">0 = Regular (3+/week)</option>
+                    <option value="1">1 = Some (1–2/week)</option>
+                    <option value="2">2 = None</option>
+                </select>
+            </div>
+            <div class="col-12 note">
+                Stored as <code>exercise</code> (0/1/2) in JSON.
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>IPSS (7 questions, 0–5 each)</legend>
+        <div class="grid" id="ipssGrid"></div>
+        <div class="note muted">Stored as <code>ipss: [q1..q7]</code>.</div>
+    </fieldset>
+
+    <fieldset>
+        <legend>SHIM (5 questions, 0–5 each)</legend>
+        <div class="grid" id="shimGrid"></div>
+        <div class="note muted">Stored as <code>shim: [q1..q5]</code>.</div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Optional PSA / MRI (if known)</legend>
+        <div class="grid">
+            <div class="col-3">
+                <label>PSA (ng/mL)</label>
+                <input id="psa" type="number" step="0.01" min="0" max="200" placeholder="optional" />
+            </div>
+            <div class="col-3">
+                <label>PI-RADS (2–5)</label>
+                <select id="pirads">
+                    <option value="">(unknown)</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="btns">
+        <button class="primary" id="saveBtn">Save Locally</button>
+        <button id="exportBtn">Export JSON</button>
+        <button id="previewBtn">Preview JSON</button>
+        <button class="danger" id="clearBtn">Clear Local Draft</button>
+    </div>
+
+    <p class="note">
+        Local draft key: <code>epsa_offline_part1_draft</code>. Export shape:
+        <code>{version, exportDate, part, patientMeta, formData}</code>.
+    </p>
+
+    <h3>Preview</h3>
+    <pre id="preview">{}</pre>
+
+    <script>
+        const DRAFT_KEY = "epsa_offline_part1_draft";
+
+        function el(id) { return document.getElementById(id); }
+        function numOrEmpty(v) {
+            if (v === "" || v == null) return "";
+            const n = Number(v);
+            return Number.isFinite(n) ? n : "";
+        }
+        function intOrEmpty(v) {
+            if (v === "" || v == null) return "";
+            const n = parseInt(v, 10);
+            return Number.isFinite(n) ? n : "";
+        }
+
+        function buildQuestions(containerId, count, prefix) {
+            const grid = el(containerId);
+            grid.innerHTML = "";
+            for (let i = 1; i <= count; i++) {
+                const wrap = document.createElement("div");
+                wrap.className = "col-3";
+                const lab = document.createElement("label");
+                lab.textContent = `${prefix} Q${i} (0–5)`;
+                const inp = document.createElement("input");
+                inp.type = "number";
+                inp.min = "0";
+                inp.max = "5";
+                inp.step = "1";
+                inp.value = "0";
+                inp.id = `${prefix.toLowerCase()}_${i}`;
+                inp.addEventListener("input", () => {
+                    computeBMI();
+                    autoPreview();
+                });
+                wrap.appendChild(lab);
+                wrap.appendChild(inp);
+                grid.appendChild(wrap);
+            }
+        }
+
+        buildQuestions("ipssGrid", 7, "IPSS");
+        buildQuestions("shimGrid", 5, "SHIM");
+
+        function computeBMI() {
+            const heightUnit = el("heightUnit").value;
+            const weightUnit = el("weightUnit").value;
+
+            let heightCm = numOrEmpty(el("heightCm").value);
+            const heightFt = numOrEmpty(el("heightFt").value);
+            const heightIn = numOrEmpty(el("heightIn").value);
+
+            if (heightUnit === "imperial") {
+                if (heightFt !== "" || heightIn !== "") {
+                    const totalIn = (heightFt === "" ? 0 : heightFt) * 12 + (heightIn === "" ? 0 : heightIn);
+                    if (totalIn > 0) heightCm = totalIn * 2.54;
+                }
+            }
+
+            let weightKg = numOrEmpty(el("weightKg").value);
+            const weight = numOrEmpty(el("weight").value);
+
+            if (weightUnit === "lbs") {
+                if (weight !== "") weightKg = weight * 0.45359237;
+            } else {
+                if (weight !== "") weightKg = weight;
+            }
+
+            if (weightKg !== "") el("weightKg").value = (Math.round(weightKg * 10) / 10).toString();
+
+            if (heightCm !== "" && weightKg !== "" && heightCm > 0) {
+                const m = heightCm / 100;
+                const bmi = weightKg / (m * m);
+                el("bmi").value = (Math.round(bmi * 10) / 10).toString();
+            } else {
+                el("bmi").value = "";
+            }
+        }
+
+        ["heightUnit", "heightFt", "heightIn", "heightCm", "weightUnit", "weight", "weightKg"].forEach(id => {
+            el(id).addEventListener("input", () => { computeBMI(); autoPreview(); });
+            el(id).addEventListener("change", () => { computeBMI(); autoPreview(); });
+        });
+
+        function getIPSS() {
+            const arr = [];
+            for (let i = 1; i <= 7; i++) {
+                arr.push(intOrEmpty(el(`ipss_${i}`).value) || 0);
+            }
+            return arr;
+        }
+        function getSHIM() {
+            const arr = [];
+            for (let i = 1; i <= 5; i++) {
+                arr.push(intOrEmpty(el(`shim_${i}`).value) || 0);
+            }
+            return arr;
+        }
+
+        function buildExportObject() {
+            const patientMeta = {
+                name: el("patientName").value.trim(),
+                phone: el("patientPhone").value.trim(),
+                mrn: el("patientMRN").value.trim(),
+                dateOfService: el("dateOfService").value,
+                consent: el("consentCheckbox").checked
+            };
+
+            const formData = {
+                age: String(intOrEmpty(el("age").value) ?? ""),
+                race: el("race").value,
+
+                familyHistory: intOrEmpty(el("familyHistory").value) || 0,
+                inflammationHistory: intOrEmpty(el("inflammationHistory").value) || 0,
+
+                brcaStatus: el("brcaStatus").value,
+                heightUnit: el("heightUnit").value,
+                heightFt: String(intOrEmpty(el("heightFt").value) ?? ""),
+                heightIn: String(intOrEmpty(el("heightIn").value) ?? ""),
+                heightCm: el("heightCm").value === "" ? "" : String(numOrEmpty(el("heightCm").value)),
+                weightUnit: el("weightUnit").value,
+                weight: el("weight").value === "" ? "" : String(numOrEmpty(el("weight").value)),
+                weightKg: el("weightKg").value === "" ? "" : String(numOrEmpty(el("weightKg").value)),
+                bmi: numOrEmpty(el("bmi").value),
+
+                exercise: intOrEmpty(el("exercise").value) || 0,
+                smoking: intOrEmpty(el("smoking").value) || 0,
+                chemicalExposure: el("chemicalExposure").value,
+                dietPattern: el("dietPattern").value,
+                geographicOrigin: el("geographicOrigin").value,
+
+                ipss: getIPSS(),
+                shim: getSHIM()
+            };
+
+            const psaVal = el("psa").value.trim();
+            const piradsVal = el("pirads").value.trim();
+            if (psaVal !== "") formData.psa = psaVal;
+            if (piradsVal !== "") formData.pirads = piradsVal;
+
+            return {
+                version: "1.0",
+                exportDate: new Date().toISOString(),
+                part: "part1",
+                patientMeta,
+                formData
+            };
+        }
+
+        function saveDraft() {
+            const obj = buildExportObject();
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(obj));
+            return obj;
+        }
+
+        function loadDraft() {
+            try {
+                const s = localStorage.getItem(DRAFT_KEY);
+                if (!s) return null;
+                return JSON.parse(s);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function applyDraft(obj) {
+            if (!obj) return;
+            const pm = obj.patientMeta || {};
+            const d = obj.formData || {};
+
+            el("patientName").value = pm.name ?? "";
+            el("patientPhone").value = pm.phone ?? "";
+            el("patientMRN").value = pm.mrn ?? "";
+            el("dateOfService").value = pm.dateOfService ?? "";
+            el("consentCheckbox").checked = Boolean(pm.consent);
+
+            el("age").value = d.age ?? "";
+            el("race").value = d.race ?? "unknown";
+            el("familyHistory").value = String(d.familyHistory ?? 0);
+            el("inflammationHistory").value = String(d.inflammationHistory ?? 0);
+
+            el("brcaStatus").value = d.brcaStatus ?? "unknown";
+            el("heightUnit").value = d.heightUnit ?? "imperial";
+            el("heightFt").value = d.heightFt ?? "";
+            el("heightIn").value = d.heightIn ?? "";
+            el("heightCm").value = d.heightCm ?? "";
+            el("weightUnit").value = d.weightUnit ?? "lbs";
+            el("weight").value = d.weight ?? "";
+            el("weightKg").value = d.weightKg ?? "";
+            el("bmi").value = (d.bmi === "" ? "" : d.bmi);
+
+            el("exercise").value = String(d.exercise ?? 0);
+            el("smoking").value = String(d.smoking ?? 0);
+            el("chemicalExposure").value = d.chemicalExposure ?? "unknown";
+            el("dietPattern").value = d.dietPattern ?? "unknown";
+            el("geographicOrigin").value = d.geographicOrigin ?? "unknown";
+
+            const ipss = Array.isArray(d.ipss) ? d.ipss : [];
+            for (let i = 1; i <= 7; i++) {
+                el(`ipss_${i}`).value = String(ipss[i - 1] ?? 0);
+            }
+
+            const shim = Array.isArray(d.shim) ? d.shim : [];
+            for (let i = 1; i <= 5; i++) {
+                el(`shim_${i}`).value = String(shim[i - 1] ?? 0);
+            }
+
+            el("psa").value = d.psa ?? "";
+            el("pirads").value = d.pirads ?? "";
+
+            computeBMI();
+        }
+
+        function downloadJson(obj, filename) {
+            const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function autoPreview() {
+            const obj = buildExportObject();
+            el("preview").textContent = JSON.stringify(obj, null, 2);
+        }
+
+        // Wire buttons
+        el("saveBtn").addEventListener("click", () => {
+            const obj = saveDraft();
+            el("preview").textContent = JSON.stringify(obj, null, 2);
+            alert("Saved locally.");
+        });
+
+        el("exportBtn").addEventListener("click", () => {
+            if (!el("consentCheckbox").checked) {
+                alert("Consent must be confirmed before export.");
+                return;
+            }
+            const obj = saveDraft();
+            const safeDate = new Date().toISOString().replace(/[:.]/g, "-");
+            downloadJson(obj, `epsa-part1-data-${safeDate}.json`);
+        });
+
+        el("previewBtn").addEventListener("click", () => autoPreview());
+
+        el("clearBtn").addEventListener("click", () => {
+            localStorage.removeItem(DRAFT_KEY);
+            alert("Cleared local draft.");
+            autoPreview();
+        });
+
+        // Auto-preview on changes
+        document.querySelectorAll("input,select,textarea").forEach(node => {
+            node.addEventListener("input", autoPreview);
+            node.addEventListener("change", autoPreview);
+        });
+
+        // Load draft on startup
+        const draft = loadDraft();
+        if (draft) applyDraft(draft);
+        computeBMI();
+        autoPreview();
+    </script>
+</body>
+
+</html>
